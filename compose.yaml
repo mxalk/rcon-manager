@@ -1,0 +1,13 @@
+services:
+  rcon-manager:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rcon-manager
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3001}:3001"
+    volumes:
+      - ./data:/data
+    env_file:
+      - .env

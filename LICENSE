@@ -1,0 +1,72 @@
+Custom Source-Available License (Non-Commercial Without Written Permission)
+Version 1.0
+
+Copyright (c) 2026 Emmanouil Chalkiadakis
+
+1. Definitions
+
+"Software" means this repository and all source code, documentation, assets,
+and related materials distributed with it.
+
+"Licensor" means the copyright holder named above.
+
+"Commercial Use" means any use intended for or directed toward commercial
+advantage or monetary compensation, including but not limited to selling,
+licensing, hosting as a paid service, paid support offerings, consulting,
+internal business use, or use in products/services that generate revenue.
+"Commercial Use" includes both direct and indirect monetization, including use
+of the Software as part of a monetized platform, product, or service.
+
+2. Granted Rights (Non-Commercial Only)
+
+Subject to this license, you may:
+
+- use the Software for personal, educational, research, and non-commercial purposes;
+- copy and modify the Software;
+- redistribute the Software, including modified versions,
+  provided this license is included.
+
+3. Commercial Restriction
+
+You may not make any Commercial Use of the Software unless you first obtain
+explicit written permission from the Licensor.
+
+Written permission must be granted by the Licensor in a signed writing (including
+digitally signed writing) that clearly authorizes the specific commercial use.
+Absent such written permission, all Commercial Use is prohibited.
+
+Any commercial license granted by the Licensor may require royalty payments,
+license fees, or other commercial terms determined solely by the Licensor.
+
+Any permission or commercial license granted by the Licensor is limited to the
+specifically identified recipient and approved use scope, is non-transferable,
+and does not grant any right to sublicense, redistribute, or use the Software
+outside the expressly authorized scope unless the Licensor explicitly states
+otherwise in writing.
+
+4. Reserved Rights
+
+All rights not expressly granted are reserved by the Licensor.
+
+5. No Trademark License
+
+This license does not grant any rights to use the Licensor's name, trademarks,
+logos, or branding.
+
+6. Disclaimer of Warranty
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE, AND NONINFRINGEMENT.
+
+7. Limitation of Liability
+
+IN NO EVENT SHALL THE LICENSOR BE LIABLE FOR ANY CLAIM, DAMAGES, OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT, OR OTHERWISE, ARISING FROM,
+OUT OF, OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+8. Termination
+
+Any use of the Software in violation of this license automatically terminates
+your rights under this license.
