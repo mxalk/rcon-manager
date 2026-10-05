@@ -51,15 +51,38 @@ Response:
     "id": "user-id",
     "username": "admin",
     "role": "admin",
+    "mustChangePassword": true,
     "createdAt": "2026-03-09T12:00:00.000Z",
     "updatedAt": "2026-03-09T12:00:00.000Z"
   }
 }
 ```
 
+`mustChangePassword` is present (and `true`) only while the user has a temporary password; see below.
+
 `GET /api/auth/me`
 
 Returns the authenticated user.
+
+### Temporary passwords
+
+A user has a temporary password (`mustChangePassword: true` on the user object) when:
+
+- an admin created them (UI, API, or the `addUsers.js` tool)
+- an admin set their password for them (`PUT /api/users/:id/password` on someone else)
+- they are the bootstrap admin created on first startup
+
+Until they set their own password, every authenticated route except `GET /api/auth/me` and
+`PUT /api/users/<own id>/password` answers `403`:
+
+```json
+{
+  "error": "Set a new password first",
+  "code": "PASSWORD_CHANGE_REQUIRED"
+}
+```
+
+The websocket console refuses them too. Changing their own password clears the flag.
 
 ## Servers
 
@@ -144,6 +167,10 @@ Returns all users without password hashes.
 Note:
 
 - the configured reserved admin username is protected and must always have role `admin`
+- the new user gets a temporary password and must set their own at first login
+- `password` is optional: if it is missing or empty, the server generates a temporary password and returns it once
+  as `temporaryPassword`
+- `serverPermissions` is optional and ignored for `admin` users
 
 Request:
 
@@ -151,7 +178,25 @@ Request:
 {
   "username": "user1",
   "password": "sha256:<client-side-password-digest>",
-  "role": "user"
+  "role": "user",
+  "serverPermissions": [{ "serverId": "server-id" }]
+}
+```
+
+Response (`201`; `temporaryPassword` only when the server generated it):
+
+```json
+{
+  "user": {
+    "id": "user-id",
+    "username": "user1",
+    "role": "user",
+    "serverPermissions": [{ "serverId": "server-id" }],
+    "mustChangePassword": true,
+    "createdAt": "2026-03-09T12:00:00.000Z",
+    "updatedAt": "2026-03-09T12:00:00.000Z"
+  },
+  "temporaryPassword": "k7Qm-x2Pd-9fRt"
 }
 ```
 
@@ -173,6 +218,9 @@ Allowed for:
 - `admin`
 - the user updating their own password
 - for the configured reserved admin username, only that same account can change its password
+
+Changing your own password clears `mustChangePassword`; a password an admin sets for someone else is temporary
+(`mustChangePassword: true`) until that user changes it.
 
 Request:
 
@@ -230,6 +278,7 @@ The server rejects the connection if:
 - token is missing or invalid
 - `serverId` is missing
 - the server record does not exist
+- the user has a temporary password (`mustChangePassword`); an already open connection is closed with `4403 Forbidden`
 
 ### Client messages
 

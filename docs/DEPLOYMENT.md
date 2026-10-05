@@ -25,6 +25,7 @@ At minimum, change:
 
 - `DEFAULT_ADMIN_PASSWORD` (recommended, otherwise a startup token is generated and logged once)
 - `ALLOWED_ORIGINS` (recommended in production; comma-separated trusted origins)
+- `TRUST_PROXY` (required behind a reverse proxy; see [Reverse proxy recommendation](#reverse-proxy-recommendation))
 - `LOGIN_RATE_LIMIT_MAX_TRACKED_KEYS` (optional hard cap for in-memory login limiter buckets; defaults to `10000`)
 
 ### 2. Start the service
@@ -44,6 +45,22 @@ docker compose logs -f
 ```bash
 docker compose down
 ```
+
+## First login and adding users
+
+The bootstrap admin, users an admin creates, and users whose password an admin resets all start with a temporary
+password. At login they get a change-password screen and nothing else works (API or live console) until they set
+their own.
+
+To add several users at once, or give someone a new temporary password, run the bundled tool in the container:
+
+```bash
+docker exec rcon-manager node server/dist/tools/addUsers.js --server <server-name> alice bob
+docker exec rcon-manager node server/dist/tools/addUsers.js --admin carol
+docker exec rcon-manager node server/dist/tools/addUsers.js --reset alice
+```
+
+It prints each username with its temporary password. See the README for details.
 
 ## Persistence
 
@@ -87,6 +104,12 @@ WebSocket upgrade support must be enabled because the live console uses `/ws`.
 The app and websocket are intended to share the same domain (for example `https://rcon.example.com` with websocket at `wss://rcon.example.com/ws`).
 HTTP API traffic should be routed on the same domain under `/api`.
 
+Set `TRUST_PROXY` to the proxy's IP or subnet (comma-separated for several), or to the number of proxy hops in front
+of the app. Without it the app sees every request as coming from the proxy: all visitors share one login rate-limit
+bucket (`LOGIN_RATE_LIMIT_MAX_ATTEMPTS` failed logins from anyone, 10 by default, lock everybody out) and auth logs show the proxy's address. `true` trusts any
+`X-Forwarded-For` and is only safe when nothing but the proxy can reach the app. Leave it unset when clients connect
+directly.
+
 ## Security notes
 
 Current strengths:
@@ -94,7 +117,8 @@ Current strengths:
 - app user passwords are bcrypt-hashed
 - JWT auth is enforced on API and websocket console access
 - role checks are enforced server-side
-- login route has per-IP rate limiting
+- login route has per-IP rate limiting (behind a reverse proxy, only with `TRUST_PROXY` set)
+- admin-created and admin-reset passwords are temporary and must be replaced by the user at first login
 - persisted data files are created with restrictive permissions
 - websocket auth can use subprotocol token transport (avoids query token in URL logs)
 
