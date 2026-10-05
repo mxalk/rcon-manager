@@ -53,6 +53,8 @@ const socketHub = setupConsoleSocket({
   allowedOrigins: config.allowedOrigins
 });
 
+// behind a reverse proxy, req.ip (login rate limiting, auth logs) must be the real client, not the proxy
+app.set("trust proxy", config.trustProxy);
 registerBaseHttpMiddleware(app, config.allowedOrigins);
 app.use(express.json({ limit: "64kb", strict: true, type: "application/json" }));
 

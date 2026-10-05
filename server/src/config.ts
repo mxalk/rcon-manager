@@ -38,6 +38,25 @@ function parseOrigins(value: string | undefined): string[] {
   return [...origins];
 }
 
+/**
+ * Express "trust proxy": which hops in front of the app may set X-Forwarded-For. Unset = none (the socket address
+ * is the client). A number = that many hops; "true" = any (only safe when nothing else can reach the app);
+ * otherwise addresses/subnets, comma-separated (e.g. the reverse proxy's IP).
+ */
+function parseTrustProxy(value: string | undefined): boolean | number | string {
+  const raw = value?.trim();
+  if (!raw || raw === "false") {
+    return false;
+  }
+  if (raw === "true") {
+    return true;
+  }
+  if (/^\d+$/.test(raw)) {
+    return Number.parseInt(raw, 10);
+  }
+  return raw;
+}
+
 function resolveWritableDataDir(): string | null {
   const candidates: string[] = [];
 
@@ -123,7 +142,8 @@ export const config = {
   loginRateLimitMaxAttempts: parsePositiveInteger(process.env.LOGIN_RATE_LIMIT_MAX_ATTEMPTS, 10),
   loginRateLimitWindowMs: parsePositiveInteger(process.env.LOGIN_RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000),
   loginRateLimitMaxTrackedKeys: parsePositiveInteger(process.env.LOGIN_RATE_LIMIT_MAX_TRACKED_KEYS, 10000),
-  allowedOrigins: parseOrigins(process.env.ALLOWED_ORIGINS)
+  allowedOrigins: parseOrigins(process.env.ALLOWED_ORIGINS),
+  trustProxy: parseTrustProxy(process.env.TRUST_PROXY)
 };
 
 export { accountRoles };

@@ -140,6 +140,8 @@ Backend runtime variables:
 - `LOGIN_RATE_LIMIT_WINDOW_MS`: login attempt window size, default `900000` (15 minutes)
 - `LOGIN_RATE_LIMIT_MAX_TRACKED_KEYS`: max in-memory rate-limit buckets before oldest eviction, default `10000`
 - `ALLOWED_ORIGINS`: optional comma-separated allowlist for CORS and websocket origin checks
+- `TRUST_PROXY`: reverse proxies allowed to set `X-Forwarded-For` (proxy IP/subnet, comma-separated, or a hop count).
+  Set it behind a proxy, or every visitor shares the proxy's IP for login rate limiting.
 
 Frontend routing in production:
 
