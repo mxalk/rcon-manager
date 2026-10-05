@@ -37,6 +37,7 @@ export async function ensureDefaultAdminUser({
       passwordHash: await hashPassword(initialPassword),
       role: "admin",
       serverPermissions: [],
+      mustChangePassword: true,
       createdAt: now,
       updatedAt: now
     };

@@ -33,6 +33,7 @@ export function normalizeUser(user: LegacyStoredUser): StoredUser {
     passwordHash: user.passwordHash,
     role: user.role === "admin" ? "admin" : "user",
     serverPermissions: normalizeServerPermissions(user.serverPermissions),
+    ...(user.mustChangePassword === true ? { mustChangePassword: true } : {}),
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };

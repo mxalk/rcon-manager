@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { loginQuery } from "../../lib/query/index.js";
+import { loginQuery, updateUserPasswordQuery } from "../../lib/query/index.js";
 import type { PublicUser } from "../../lib/types.js";
 
 export function useAuthSession() {
@@ -24,6 +24,16 @@ export function useAuthSession() {
     }
   }
 
+  /** Sets the user's own password (after a temporary one); the server then lifts the restriction. */
+  async function changeOwnPassword(password: string) {
+    if (!token || !user) {
+      return;
+    }
+    await updateUserPasswordQuery(token, user.id, password);
+    // the session stays (token in localStorage); reload so everything loads with the restriction lifted
+    window.location.reload();
+  }
+
   function logout() {
     setToken("");
     setUser(null);
@@ -37,6 +47,7 @@ export function useAuthSession() {
     authError,
     busyLogin,
     login,
-    logout
+    logout,
+    changeOwnPassword
   };
 }

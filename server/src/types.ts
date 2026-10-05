@@ -12,6 +12,8 @@ export interface PublicUser {
   role: AccountRole;
   isReservedAdmin?: boolean;
   serverPermissions: ServerPermission[];
+  /** Set for temporary passwords (created or reset by an admin): the user must pick a new one before anything else. */
+  mustChangePassword?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,6 +28,7 @@ export interface LegacyStoredUser {
   role?: "admin" | "operator" | "viewer" | "user";
   passwordHash: string;
   serverPermissions?: ServerPermission[];
+  mustChangePassword?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -60,6 +63,7 @@ export interface AuthUser {
   username: string;
   role: AccountRole;
   serverPermissions: ServerPermission[];
+  mustChangePassword?: boolean;
 }
 
 export interface LoginRequestBody {
@@ -76,7 +80,8 @@ export interface ServerPayload {
 
 export interface CreateUserPayload {
   username: string;
-  password: string;
+  /** Empty or missing: the server generates a temporary password and returns it once. */
+  password?: string;
   role: AccountRole;
   serverPermissions?: ServerPermission[];
 }

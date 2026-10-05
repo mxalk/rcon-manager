@@ -67,12 +67,15 @@ export function useAppController(): AppViewModel {
     serverForm: serverActions.serverForm,
     serverEditorOpen: serverActions.serverEditorOpen,
     userForm: userActions.userForm,
+    lastTemporaryPassword: userActions.lastTemporaryPassword,
     passwordDrafts: userActions.passwordDrafts,
     isAdmin,
     consoleBottomRef: consoleState.consoleBottomRef,
     actions: {
       login: auth.login,
       logout: auth.logout,
+      changeOwnPassword: auth.changeOwnPassword,
+      dismissTemporaryPassword: userActions.dismissTemporaryPassword,
       cleanupArtifacts: async () => {
         if (!isAdmin) {
           return;

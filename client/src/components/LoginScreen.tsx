@@ -42,6 +42,7 @@ export function LoginScreen({
             required
           />
         </label>
+        <p className="line-muted password-note">(your password is sent and stored encrypted)</p>
         {error ? <div className="error-box">{error}</div> : null}
         <button type="submit" disabled={busy}>
           {busy ? "Signing in..." : "Login"}

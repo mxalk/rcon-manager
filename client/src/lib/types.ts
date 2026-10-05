@@ -10,6 +10,7 @@ export interface PublicUser {
   role: AccountRole;
   isReservedAdmin?: boolean;
   serverPermissions: ServerPermission[];
+  mustChangePassword?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -75,6 +76,8 @@ export interface ServerPayload {
 
 export interface UserResponse {
   user: PublicUser;
+  /** Only when the server generated the (temporary) password. */
+  temporaryPassword?: string;
 }
 
 interface ReadyMessage {
@@ -122,6 +125,7 @@ export type ConsoleServerMessage =
 
 export interface CreateUserPayload {
   username: string;
+  /** Empty: the server generates a temporary password. */
   password: string;
   role: AccountRole;
   serverPermissions?: ServerPermission[];

@@ -7,6 +7,8 @@ import type { AppTab } from "./state.js";
 interface AppViewActions {
   login: (credentials: { username: string; password: string }) => Promise<void>;
   logout: () => void;
+  changeOwnPassword: (password: string) => Promise<void>;
+  dismissTemporaryPassword: () => void;
   cleanupArtifacts: () => Promise<void>;
   setActiveTab: (tab: AppTab) => void;
   setSelectedServerId: (serverId: string) => void;
@@ -51,6 +53,7 @@ export interface AppViewModel {
   serverForm: ServerFormState;
   serverEditorOpen: boolean;
   userForm: UserFormState;
+  lastTemporaryPassword: { username: string; password: string } | null;
   passwordDrafts: Record<string, string>;
   isAdmin: boolean;
   consoleBottomRef: MutableRefObject<HTMLDivElement | null>;

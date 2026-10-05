@@ -84,8 +84,20 @@ export async function verifyToken(
     id: user.id,
     username: user.username,
     role: user.role,
-    serverPermissions: user.serverPermissions
+    serverPermissions: user.serverPermissions,
+    ...(user.mustChangePassword ? { mustChangePassword: true } : {})
   };
+}
+
+/**
+ * With a temporary password a user may only see who they are and set their own password; everything else waits.
+ * (Paths are relative to the /api router.)
+ */
+function allowedWithTemporaryPassword(req: Request, user: AuthUser): boolean {
+  if (req.method === "GET" && req.path === "/auth/me") {
+    return true;
+  }
+  return req.method === "PUT" && req.path === `/users/${user.id}/password`;
 }
 
 export function authMiddleware(db: AppDatabase, jwtSecret: string): RequestHandler {
@@ -99,7 +111,12 @@ export function authMiddleware(db: AppDatabase, jwtSecret: string): RequestHandl
         return;
       }
 
-      req.user = await verifyToken(token, db, jwtSecret);
+      const user = await verifyToken(token, db, jwtSecret);
+      if (user.mustChangePassword && !allowedWithTemporaryPassword(req, user)) {
+        res.status(403).json({ error: "Set a new password first", code: "PASSWORD_CHANGE_REQUIRED" });
+        return;
+      }
+      req.user = user;
       next();
     } catch {
       res.status(401).json({ error: "Invalid or expired token" });
@@ -130,6 +147,7 @@ export function sanitizeUser(user: StoredUser, reservedAdminUsername?: string): 
     role: user.role,
     ...(reservedAdminUsername ? { isReservedAdmin: user.username === reservedAdminUsername } : {}),
     serverPermissions: user.serverPermissions,
+    ...(user.mustChangePassword ? { mustChangePassword: true } : {}),
     createdAt: user.createdAt,
     updatedAt: user.updatedAt
   };

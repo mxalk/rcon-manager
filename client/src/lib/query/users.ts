@@ -13,6 +13,14 @@ export function listUsersQuery(token: string) {
 }
 
 export async function createUserQuery(token: string, body: CreateUserPayload) {
+  if (!body.password) {
+    // the server generates a temporary password and returns it once
+    return apiRequest<UserResponse>("/api/users", {
+      token,
+      method: "POST",
+      body: { ...body, password: "" }
+    });
+  }
   assertPasswordPolicy(body.password);
   const hashedPassword = await hashPasswordForTransport(body.password);
   return apiRequest<UserResponse>("/api/users", {

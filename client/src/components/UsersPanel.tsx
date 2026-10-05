@@ -10,6 +10,8 @@ export function UsersPanel({
   servers,
   currentUserId,
   userForm,
+  lastTemporaryPassword,
+  onDismissTemporaryPassword,
   passwordDrafts,
   onRefresh,
   onCreateUser,
@@ -24,6 +26,8 @@ export function UsersPanel({
   servers: ServerRecord[];
   currentUserId: string;
   userForm: UserFormState;
+  lastTemporaryPassword: { username: string; password: string } | null;
+  onDismissTemporaryPassword: () => void;
   passwordDrafts: Record<string, string>;
   onRefresh: () => void;
   onCreateUser: (event: FormEvent<HTMLFormElement>) => void;
@@ -63,12 +67,27 @@ export function UsersPanel({
             type="password"
             value={userForm.password}
             onChange={(event) => onUserFormChange({ password: event.target.value })}
-            placeholder="password"
-            required
+            placeholder="empty = generate one"
           />
         </label>
         <button type="submit">Create User</button>
       </form>
+
+      <p className="line-muted">
+        New users and passwords you set for others are temporary: they choose their own at their next login.
+      </p>
+
+      {lastTemporaryPassword ? (
+        <div className="banner temp-password">
+          <span>
+            Temporary password for <strong>{lastTemporaryPassword.username}</strong>:{" "}
+            <code>{lastTemporaryPassword.password}</code> (shown once; send it to them)
+          </span>
+          <button type="button" onClick={onDismissTemporaryPassword}>
+            Done
+          </button>
+        </div>
+      ) : null}
 
       <div className="table-wrap">
         <table>
@@ -84,7 +103,10 @@ export function UsersPanel({
           <tbody>
             {users.map((userItem) => (
               <tr key={userItem.id}>
-                <td>{userItem.username}</td>
+                <td>
+                  {userItem.username}
+                  {userItem.mustChangePassword ? <span className="line-muted"> (temporary password)</span> : null}
+                </td>
                 <td className="account-cell">
                   {userItem.isReservedAdmin ? (
                     <strong>admin</strong>

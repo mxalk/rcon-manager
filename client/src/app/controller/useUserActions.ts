@@ -23,6 +23,8 @@ export function useUserActions({
 }) {
   const [userForm, setUserForm] = useState<UserFormState>(EMPTY_USER_FORM);
   const [passwordDrafts, setPasswordDrafts] = useState<Record<string, string>>({});
+  /** The last temporary password set by this admin, shown once (generated, or typed for a new user / a reset). */
+  const [lastTemporaryPassword, setLastTemporaryPassword] = useState<{ username: string; password: string } | null>(null);
 
   async function createUser(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -31,7 +33,11 @@ export function useUserActions({
     }
 
     try {
-      await createUserQuery(token, userForm);
+      const created = await createUserQuery(token, userForm);
+      setLastTemporaryPassword({
+        username: created.user.username,
+        password: created.temporaryPassword || userForm.password
+      });
       setUserForm(EMPTY_USER_FORM);
       await refreshUsers();
     } catch (error: unknown) {
@@ -103,6 +109,8 @@ export function useUserActions({
   return {
     userForm,
     setUserForm,
+    lastTemporaryPassword,
+    dismissTemporaryPassword: () => setLastTemporaryPassword(null),
     passwordDrafts,
     setPasswordDrafts,
     createUser,

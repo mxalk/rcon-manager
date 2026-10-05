@@ -1,4 +1,5 @@
 import { AppHeader } from "../../components/AppHeader.js";
+import { ChangePasswordScreen } from "../../components/ChangePasswordScreen.js";
 import { ConsolePanel } from "../../components/ConsolePanel.js";
 import { LoginScreen } from "../../components/LoginScreen.js";
 import { ServersPanel } from "../../components/ServersPanel.js";
@@ -13,6 +14,16 @@ export function AppView(model: AppViewModel) {
         onLogin={model.actions.login}
         busy={model.busyLogin}
         error={model.authError}
+      />
+    );
+  }
+
+  if (model.user?.mustChangePassword) {
+    return (
+      <ChangePasswordScreen
+        username={model.user.username}
+        onChangePassword={model.actions.changeOwnPassword}
+        onLogout={model.actions.logout}
       />
     );
   }
@@ -72,6 +83,8 @@ export function AppView(model: AppViewModel) {
             servers={model.servers}
             currentUserId={model.user?.id || ""}
             userForm={model.userForm}
+            lastTemporaryPassword={model.lastTemporaryPassword}
+            onDismissTemporaryPassword={model.actions.dismissTemporaryPassword}
             passwordDrafts={model.passwordDrafts}
             onRefresh={() => void model.actions.refreshUsers()}
             onCreateUser={model.actions.createUser}

@@ -90,6 +90,22 @@ Until you set a new password for that admin account, login is only possible with
 The memory-only bootstrap token is invalidated when that admin password is changed.
 The configured admin username is reserved and remains role `admin` (cannot be demoted).
 
+## Adding users quickly
+
+New users get a **temporary password** and must choose their own at their first login (nothing else works until
+they do). The same goes for a password an admin sets for someone else, and for the bootstrap admin.
+
+- In the UI (Users): leave the password empty and one is generated; it's shown once to pass on.
+- From the command line, several at once, optionally with server access (by name or id):
+
+  ```bash
+  docker exec rcon-manager node server/dist/tools/addUsers.js --server Delululand alice bob
+  docker exec rcon-manager node server/dist/tools/addUsers.js --admin carol
+  docker exec rcon-manager node server/dist/tools/addUsers.js --reset alice   # new temporary password
+  ```
+
+  It prints each username with its temporary password.
+
 ## Storage model
 
 This project intentionally uses file-backed persistence instead of a full database.

@@ -6,6 +6,7 @@ import { hashPassword, requireRoles, sanitizeUser } from "../auth.js";
 import { clearBootstrapPasswordStateForUser } from "../app/bootstrapPasswordState.js";
 import { accountRoles } from "../config.js";
 import { countAdmins, validateServerPermissions } from "../app/permissions.js";
+import { generateTemporaryPassword } from "../app/temporaryPassword.js";
 import { validatePassword, validateUsername } from "../app/validation.js";
 import type { AppDatabase } from "../storage/database.js";
 import type {
@@ -32,7 +33,10 @@ export function registerUserRoutes(appRouter: Router, deps: UserRoutesDeps): voi
 
   appRouter.post("/users", requireAuth, requireRoles("admin"), async (req: Request<{}, {}, CreateUserPayload>, res: Response) => {
     const username = String(req.body?.username || "").trim();
-    const password = String(req.body?.password || "");
+    // no password given: generate a temporary one (returned once below); either way the user must change it
+    const typedPassword = String(req.body?.password || "");
+    const generated = typedPassword ? "" : generateTemporaryPassword();
+    const password = typedPassword || generated;
     const role = String(req.body?.role || "user") as AccountRole;
 
     if (username === hardAdminUsername && role !== "admin") {
@@ -75,13 +79,17 @@ export function registerUserRoutes(appRouter: Router, deps: UserRoutesDeps): voi
       passwordHash: await hashPassword(password),
       role,
       serverPermissions: role === "admin" ? [] : permissions,
+      mustChangePassword: true,
       createdAt: now,
       updatedAt: now
     };
 
     users.push(user);
     await db.writeUsers(users);
-    res.status(201).json({ user: sanitizeUser(user, hardAdminUsername) });
+    res.status(201).json({
+      user: sanitizeUser(user, hardAdminUsername),
+      ...(generated ? { temporaryPassword: generated } : {})
+    });
   });
 
   appRouter.put(
@@ -198,6 +206,8 @@ export function registerUserRoutes(appRouter: Router, deps: UserRoutesDeps): voi
       users[index] = {
         ...targetUser,
         passwordHash: await hashPassword(password),
+        // own password: a real one now; set by an admin for someone else: temporary, to be changed at login
+        mustChangePassword: req.user?.id !== targetUser.id,
         updatedAt: new Date().toISOString()
       };
 

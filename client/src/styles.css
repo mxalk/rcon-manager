@@ -530,3 +530,29 @@ td {
     align-items: stretch;
   }
 }
+
+.password-note {
+  font-size: 0.85rem;
+  margin: 0;
+}
+
+.temp-password {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.temp-password code {
+  font-size: 1rem;
+  user-select: all;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--muted);
+  text-decoration: underline;
+  cursor: pointer;
+}

@@ -58,6 +58,12 @@ export function useDataLoader({
       setGlobalError("");
       try {
         const me = await currentUserQuery(token);
+        if (me.user.mustChangePassword) {
+          if (!canceled) {
+            setUser(me.user);
+          }
+          return;
+        }
         const serverResponse = await listServersQuery(token);
 
         if (canceled) {

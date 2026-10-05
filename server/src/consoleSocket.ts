@@ -150,7 +150,7 @@ export function setupConsoleSocket({
       return null;
     }
 
-    if (user.role !== "admin" && !hasServerAccess(user, context.serverId)) {
+    if (user.mustChangePassword || (user.role !== "admin" && !hasServerAccess(user, context.serverId))) {
       destroyWithCode(ws, 4403, "Forbidden");
       leave(context.serverId, ws);
       return null;
@@ -383,7 +383,7 @@ export function setupConsoleSocket({
       }
 
       const user = await verifyToken(token);
-      if (user.role !== "admin" && !hasServerAccess(user, serverId)) {
+      if (user.mustChangePassword || (user.role !== "admin" && !hasServerAccess(user, serverId))) {
         socket.destroy();
         return;
       }
