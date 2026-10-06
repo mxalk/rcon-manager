@@ -38,3 +38,14 @@ export function registerBaseHttpMiddleware(app: Application, allowedOrigins: str
     next();
   });
 }
+
+/** Registered last: every request nothing else answered gets a plain 404 (JSON under /api). */
+export function registerNotFoundHandler(app: Application): void {
+  app.use((req: Request, res: Response) => {
+    if (req.path.startsWith("/api/")) {
+      res.status(404).json({ error: "Not found" });
+      return;
+    }
+    res.status(404).type("text/plain").send("Not found");
+  });
+}

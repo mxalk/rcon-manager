@@ -121,6 +121,8 @@ Current strengths:
 - admin-created and admin-reset passwords are temporary and must be replaced by the user at first login
 - persisted data files are created with restrictive permissions
 - websocket auth can use subprotocol token transport (avoids query token in URL logs)
+- only existing paths are served (`/`, the built assets, the API); everything else is a `404`, so probes for
+  files like `/.env` or `/wp-login.php` get nothing back
 
 Current limits:
 

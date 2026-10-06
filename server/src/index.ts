@@ -7,7 +7,7 @@ import express from "express";
 import { authMiddleware, verifyToken } from "./auth.js";
 import type { TokenExpiry } from "./auth.js";
 import { ensureDefaultAdminUser } from "./app/bootstrap.js";
-import { registerBaseHttpMiddleware } from "./app/httpMiddleware.js";
+import { registerBaseHttpMiddleware, registerNotFoundHandler } from "./app/httpMiddleware.js";
 import { LoginRateLimiter } from "./app/loginRateLimiter.js";
 import { hasServerAccess } from "./app/permissions.js";
 import { registerStaticClient } from "./app/staticClient.js";
@@ -75,6 +75,7 @@ app.use(
 );
 
 registerStaticClient(app);
+registerNotFoundHandler(app);
 
 async function start(): Promise<void> {
   const dataDir = await db.init();
